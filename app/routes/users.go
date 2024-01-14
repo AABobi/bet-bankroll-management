@@ -5,6 +5,7 @@ package routes
 //	"app/db"
 import (
 	"app/models"
+	"app/utils"
 	"fmt"
 	"net/http"
 
@@ -44,4 +45,30 @@ func singup(context *gin.Context) {
 	}
 	fmt.Print("test33")
 	context.JSON(http.StatusCreated, gin.H{"message": "User created", "user": user})
+}
+
+func login(context *gin.Context) {
+	var user models.User
+
+	err := context.ShouldBindJSON(&user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Cannot login"})
+	}
+
+	err = user.CheckCredentials()
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Wrong password"})
+		return
+	}
+
+	token, err := utils.GenerateToken(user.Email, user.ID)
+	if err != nil {
+		fmt.Println("log3")
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not authoticed"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Login succes", "token": token})
 }

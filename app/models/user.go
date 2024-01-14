@@ -2,6 +2,8 @@ package models
 
 import (
 	"app/db"
+	"app/utils"
+	"errors"
 	"fmt"
 )
 
@@ -42,52 +44,45 @@ func GetAllUser() ([]User, error) {
 }
 
 func (u User) SaveUser() error {
-	/*query := "INSERT INTO users(login, email, password) VALUES (? , ? , ?)"
+	query := "INSERT INTO users(login, email, password) VALUES (? , ? , ?)"
 
 	stmt, err := db.DB.Prepare(query)
-	fmt.Println("SaveUser1", u.Login, u.Email, u.Password)
 	if err != nil {
 		return err
 	}
 
 	defer stmt.Close()
-	fmt.Println("SaveUser2", u.Email)
-	_, err = stmt.Exec(u.Login, u.Email, u.Password)
+
+	hashedPassword, err := utils.HashPassword(u.Password)
+	_, err = stmt.Exec(u.Login, u.Email, hashedPassword)
 
 	if err != nil {
 		return err
 	}
 
-	return nil*/
-	query := "INSERT INTO users(login, email, password) VALUES (?, ?, ?)"
-	stmt, err := db.DB.Prepare(query)
+	return nil
+}
+
+func (u *User) CheckCredentials() error {
+	query := "SELECT id, password FROM users WHERE email = ?"
+
+	singleRow := db.DB.QueryRow(query, u.Email)
+
+	var password string
+
+	err := singleRow.Scan(&u.ID, &password)
 
 	if err != nil {
-		fmt.Println("save1")
+		fmt.Println("test")
 		return err
 	}
 
-	defer stmt.Close()
+	isPasswordValid := utils.CheckPasswordHash(u.Password, password)
 
-	//Hash password
-	fmt.Println(u.Password)
-	//hashedPassword, err := utils.HashPassword(u.Password)
-
-	if err != nil {
-		fmt.Println("save2")
-		return err
+	if !isPasswordValid {
+		fmt.Println("test1")
+		return errors.New("Invalid credentials")
 	}
 
-	result, err := stmt.Exec(u.Login, u.Email, u.Password)
-
-	if err != nil {
-		fmt.Println("save3")
-		return err
-	}
-
-	userId, err := result.LastInsertId()
-
-	u.ID = userId
-	fmt.Println("save4")
-	return err
+	return nil
 }
