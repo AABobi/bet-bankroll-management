@@ -4,8 +4,8 @@ package routes
 //	"net/http"
 //	"app/db"
 import (
-	"app/models"
-	"app/utils"
+	"ap/models"
+	"ap/utils"
 	"fmt"
 	"net/http"
 
@@ -36,7 +36,8 @@ func singup(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
 	}
-
+	fmt.Print("test111222")
+	fmt.Println(user)
 	err = user.SaveUser()
 	fmt.Print("test22")
 	if err != nil {
@@ -51,7 +52,8 @@ func login(context *gin.Context) {
 	var user models.User
 
 	err := context.ShouldBindJSON(&user)
-
+	fmt.Println("user")
+	fmt.Println(user)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Cannot login"})
 	}

@@ -1,0 +1,20 @@
+# Use an official Node runtime as a base image
+FROM node:19.4.0
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy package.json and yarn.lock to the working directory
+COPY package*.json yarn.lock ./
+
+# Install app dependencies
+RUN yarn install
+
+# Copy the entire project to the working directory
+COPY . .
+
+# Expose the port on which your Vue app will run (default is 8080)
+EXPOSE 8080
+
+# Define the command to run your application
+CMD ["yarn", "run", "serve"]

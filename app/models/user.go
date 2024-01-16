@@ -1,8 +1,9 @@
 package models
 
 import (
-	"app/db"
-	"app/utils"
+	"ap/db"
+	"ap/utils"
+
 	"errors"
 	"fmt"
 )

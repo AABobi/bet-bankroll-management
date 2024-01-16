@@ -43,13 +43,14 @@ func createTables() {
 	}
 
 	createBetsTable := `
-	CREATE TABLE IF NOT EXISTS users (
+	CREATE TABLE IF NOT EXISTS bets (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		userID INTEGER NOT NULL,
 		betValue INTEGER,
         data DATETIME,
 		tax INTEGER,
 		win BOOLEAN , 
+		result int64 ,
 		FOREIGN KEY(userID) REFERENCES users(id)
 	)
 	`
@@ -57,6 +58,6 @@ func createTables() {
 	_, err = DB.Exec(createBetsTable)
 
 	if err != nil {
-		panic("Could not create users table")
+		panic("Could not create bets table")
 	}
 }

@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"app/utils"
+	"ap/utils"
 	"fmt"
 	"net/http"
 
