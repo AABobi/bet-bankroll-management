@@ -5,7 +5,6 @@ import (
 	"ap/routes"
 
 	"github.com/gin-contrib/cors"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,15 +19,15 @@ func main() {
 
 	// Apply CORS middleware
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowOrigins = []string{"http://frontend-vue2-service:80"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	config.AllowHeaders = []string{"Content-Type", "Authorization"}
 
 	server.Use(cors.New(config))
-
+	//gin.Default().SetTrustedProxies([]string{"localhost:3000", ":3000"})
 	// Register your routes
 	routes.RegisterRoutes(server)
 
 	// Start the server
-	server.Run(":9000")
+	server.Run()
 }

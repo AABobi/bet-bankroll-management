@@ -1,19 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
+  name: vue_appv3-deployment
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: frontend
+      app: vue_appv3
   template:
     metadata:
       labels:
-        app: frontend
+        app: vue_appv3
     spec:
       containers:
-        - name: frontend-container
-          image: vue-container1.1:latest # Replace with your Docker image
+        - name: vue_appv3
+          image: gcr.io/project-kuber/vue_appv3:latest
           ports:
             - containerPort: 3000
+           env:
+            - name: PORT
+            value: "3000" 

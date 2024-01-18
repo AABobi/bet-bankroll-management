@@ -7,7 +7,7 @@ export const useAuthenticationStore = defineStore("authentication", () => {
   const login = async (): Promise<boolean> => {
     //const token = localStorage.getItem("token");
     //console.log(userData);
-    const response = await axios.post("http://localhost:9000/login", {
+    const response = await axios.post("http://backend-go2-service:80/login", {
       email: "test3",
       login: "test3",
       password: "test3",
