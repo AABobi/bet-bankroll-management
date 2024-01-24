@@ -1,0 +1,11 @@
+.el-dialog {
+
+    font-family: "Open Sans", sans-serif;
+
+    &--center
+    &__body {
+        display: flex;
+        align-items: center;
+    text-align: center;
+    }
+}

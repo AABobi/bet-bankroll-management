@@ -5,9 +5,10 @@ export {
   ElRow as BetRow,
   ElInput as BetInput,
   ElUpload as BetUpload,
-  ElRadioGroup as VocBetRadioGroup,
+  ElRadioGroup as BetRadioGroup,
   ElRadio as BetcRadio,
   ElRadioButton as BetRadioButton,
 } from "element-plus";
 
 export { default as BetButton } from "./BetButton.vue";
+export { default as BetDialog } from "./BetDialog.vue";
