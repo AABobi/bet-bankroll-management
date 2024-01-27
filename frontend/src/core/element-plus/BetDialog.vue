@@ -7,7 +7,7 @@
     class="BetDialog"
     :show-close="false"
   >
-    <ElIcon :size="30" color="green">
+    <ElIcon :size="30" color="green" name="el-icon-check">
       <Check />
     </ElIcon>
     <span>

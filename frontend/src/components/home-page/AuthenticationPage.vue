@@ -22,6 +22,7 @@
         <BetInput
           v-model="formLoginAccessibility.email"
           @input="validationError.removeError('email')"
+          data-test="auth-page-email"
         />
       </BetFormItem>
       <BetFormItem
@@ -32,6 +33,7 @@
           v-model="formLoginAccessibility.password"
           type="password"
           @input="validationError.removeError('password')"
+          data-test="auth-page-password"
         />
       </BetFormItem>
       <BetFormItem
@@ -68,8 +70,8 @@ import {
   BetRadioButton,
   BetDialog,
 } from "@/core/element-plus/index";
-import { computed, reactive, ref } from "vue";
-//import { useRouter } from "vue-router";
+import { computed, onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 import { useAuthenticationStore } from "@/store/authentication-store";
 import { ValidationError } from "../domain/validation/validation-error";
 import { LoginType } from "../domain/login-type";
@@ -92,6 +94,10 @@ enum MenuFields {
   repeatedPassword = "repeatedPassword",
 }
 
+onMounted(() => {
+  store.test1();
+});
+
 const clearForm = () => {
   for (const v in MenuFields) {
     console.log(v);
@@ -106,10 +112,10 @@ const formLoginAccessibility = reactive({
   repeatedPassword: "",
 });
 
-//const router = useRouter();
+const router = useRouter();
 const store = useAuthenticationStore();
 
-const radio = ref<ApiType>(ApiType.REGISTER);
+const radio = ref<ApiType>(ApiType.LOGIN);
 const showDialog = ref(false);
 
 const headerDescription = ref("Enter your credentials to acces your account");
@@ -123,6 +129,7 @@ const dialogConfirmation = () => {
 };
 
 const request = async () => {
+  console.log("REQUEST");
   const email = formLoginAccessibility.email;
   const password = formLoginAccessibility.password;
   const loginType: LoginType = {
@@ -131,6 +138,9 @@ const request = async () => {
   };
 
   if (!isRegister.value) {
+    console.log("ifLogin");
+    console.log(email);
+    console.log(password);
     const wasBlank = validationError.value.reportBlank(loginType);
     if (wasBlank) {
       return;
@@ -139,9 +149,10 @@ const request = async () => {
     const errorMessage = "Email or password is incorrect";
     await callBackend(ApiType.LOGIN, loginType, errorMessage);
     if (isAuthenticated.value) {
-      //router.push("/add");
+      router.push("/add");
     }
   } else {
+    console.log("ifRegister");
     const register: RegisterType = {
       email: email,
       password: password,

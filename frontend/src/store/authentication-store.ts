@@ -5,7 +5,9 @@ import { ref } from "vue";
 //import { useRouter } from "vue-router";
 
 export const useAuthenticationStore = defineStore("authentication", () => {
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string) => {
+    console.log("DUPA - login");
+
     const response = await axios.post("http://localhost:8080/login", {
       email: email,
       password: password,
@@ -36,8 +38,13 @@ export const useAuthenticationStore = defineStore("authentication", () => {
     return false;
   };
 
+  const test1 = () => {
+    console.log("ASDJHASJKFGBASLFGBASBGJASBGBASBJGAS");
+  };
+
   return {
     login,
     register,
+    test1,
   };
 });
