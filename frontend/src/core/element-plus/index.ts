@@ -12,3 +12,4 @@ export {
 
 export { default as BetButton } from "./BetButton.vue";
 export { default as BetDialog } from "./BetDialog.vue";
+export { default as BetSelect } from "./BetSelect.vue";

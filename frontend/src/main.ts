@@ -3,7 +3,6 @@ import App from "./App.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import { createPinia } from "pinia";
-import "@/core/css/global.scss";
 import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "./routes/router";
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";

@@ -1,11 +1,8 @@
 <template>
-  <div>TEST</div>
+  <button data-test="data-test" @click="testFun">TEST</button>
 </template>
 <script setup lang="ts">
-//import { useAuthenticationStore } from "@/store/authentication-store";
-import { useTestStore } from "@/store/test-store";
-
-import { ref } from "vue";
-//const test = ref("test")
-const store = useTestStore();
+const testFun = () => {
+  console.log("TESTTEST");
+};
 </script>

@@ -1,11 +1,12 @@
 import axios from "axios";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { login, register, test1 } from "./actions";
 //import { ref } from "vue";
 //import { useRouter } from "vue-router";
 
 export const useAuthenticationStore = defineStore("authentication", () => {
-  const login = async (email: string, password: string) => {
+  /* const login = async (email: string, password: string) => {
     console.log("DUPA - login");
 
     const response = await axios.post("http://localhost:8080/login", {
@@ -40,7 +41,7 @@ export const useAuthenticationStore = defineStore("authentication", () => {
 
   const test1 = () => {
     console.log("ASDJHASJKFGBASLFGBASBGJASBGBASBJGAS");
-  };
+  };*/
 
   return {
     login,

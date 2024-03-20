@@ -254,7 +254,7 @@ const comparePassword = computed(
   background-size: cover;
   height: 100%;
   width: 100%;
-  background-color: #e7eaf6;
+  background-color: $colorBackBright;
 
   &__header {
     p {
@@ -270,12 +270,12 @@ const comparePassword = computed(
 
     &--description {
       font-size: 10px;
-      color: #a2a8d3;
+      color: $colorDesBright;
     }
   }
 
   &__container {
-    background: white;
+    background: $colorWhite;
     width: 300px;
     height: 300px;
     padding: 0 30px 0 30px;

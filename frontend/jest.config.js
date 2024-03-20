@@ -12,9 +12,8 @@ module.exports = {
     },
     coveragePathIgnorePatterns: ["/node_modules/", "/tests/"],
     coverageReporters: ["text", "json-summary"],
-    // Fix in order for vue-test-utils to work with Jest 29
-    // https://test-utils.vuejs.org/migration/#test-runners-upgrade-notes
+    setupFiles: ['<rootDir>/jest-setup.ts'], 
     testEnvironmentOptions: {
-        customExportConditions: ["node", "node-addons"],
+        customExportConditions: ["node"],
     },
 }
