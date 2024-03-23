@@ -1,14 +1,32 @@
-package main
+package controllers
 
 import (
 	"bet-manager/auth"
 	"bet-manager/models"
+	"bet-manager/repository"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func login(context *gin.Context) {
+type ApiHandlers interface {
+	Login(context *gin.Context)
+	Register(context *gin.Context)
+	RemoveUser(context *gin.Context)
+	GetAllUsers(context *gin.Context)
+}
+
+type apiHandlers struct {
+	Repository repository.IUserRepository
+}
+
+func NewApiHandlersRepository(repo repository.IUserRepository) ApiHandlers {
+	return &apiHandlers{
+		Repository: repo,
+	}
+}
+
+func (api *apiHandlers) Login(context *gin.Context) {
 	var user models.User
 
 	err := context.ShouldBindJSON(&user)
@@ -17,8 +35,7 @@ func login(context *gin.Context) {
 		return
 	}
 
-	dbUser, err := userRepository.GetUser(user.Email)
-
+	dbUser, err := api.Repository.GetUser(user.Email)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Could not get user"})
 		return
@@ -34,20 +51,20 @@ func login(context *gin.Context) {
 	context.JSON(http.StatusOK, dbUser)
 }
 
-func register(context *gin.Context) {
+func (api *apiHandlers) Register(context *gin.Context) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Could not parse data"})
 		return
 	}
-	existUser, err := userRepository.GetUser(user.Email)
+	existUser, err := api.Repository.GetUser(user.Email)
 
 	if existUser.Email == user.Email && err == nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Cannot create user because user with that email exists"})
 		return
 	} else {
-		err = userRepository.CreateUser(user)
+		err = api.Repository.CreateUser(user)
 		if err != nil {
 			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Cannot create user"})
 			return
@@ -57,35 +74,31 @@ func register(context *gin.Context) {
 	}
 }
 
-func removeUser(context *gin.Context) {
+func (api *apiHandlers) RemoveUser(context *gin.Context) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Could parse data"})
 		return
 	}
-
-	existUser, err := userRepository.GetUser(user.Email)
+	existUser, err := api.Repository.GetUser(user.Email)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Cannot remove user because it doesn't exist"})
 		return
 	}
-
 	if existUser.Email == user.Email {
-		err = userRepository.RemoveUser(user)
+		err = api.Repository.RemoveUser(user)
 		if err != nil {
 			context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("%v", err)})
 			return
 		}
-
 		context.JSON(http.StatusOK, gin.H{"message": "User removed"})
 	}
 }
 
-func getAllUsers(context *gin.Context) {
+func (api *apiHandlers) GetAllUsers(context *gin.Context) {
 	var users []models.User
-
-	users, err := userRepository.GetAll()
+	users, err := api.Repository.GetAll()
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Cannot get users"})
 		return

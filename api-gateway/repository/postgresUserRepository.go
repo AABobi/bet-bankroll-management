@@ -3,27 +3,31 @@ package repository
 import (
 	"bet-manager/models"
 	"errors"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 )
 
-type PostgresUserRepository struct {
-	db *sqlx.DB
+type IUserRepository interface {
+	GetAll() ([]models.User, error)
+	GetUser(email string) (models.User, error)
+	CreateUser(user models.User) error
+	RemoveUser(user models.User) error
 }
 
-func NewPostgresUserRepository(db *sqlx.DB) (*PostgresUserRepository, error) {
+type PostgresUserRepository struct {
+	Db *sqlx.DB
+}
+
+func NewPostgresUserRepository(db *sqlx.DB) (IUserRepository, error) {
 	if db == nil {
 		return nil, errors.New("database cannot be nil")
 	}
-
-	return &PostgresUserRepository{db: db}, nil
+	return &PostgresUserRepository{Db: db}, nil
 }
 
 func (repo *PostgresUserRepository) GetUser(email string) (models.User, error) {
-	fmt.Println(email)
 	query := `SELECT * FROM users WHERE email = $1`
 
-	row := repo.db.QueryRow(query, email)
+	row := repo.Db.QueryRow(query, email)
 
 	var user models.User
 	err := row.Scan(&user.UserId, &user.Email, &user.Password, &user.Role)
@@ -40,7 +44,7 @@ func (repo *PostgresUserRepository) CreateUser(user models.User) error {
     values($1,$2,$3)
 `
 
-	stmt, err := repo.db.Prepare(query)
+	stmt, err := repo.Db.Prepare(query)
 	if err != nil {
 		return err
 	}
@@ -57,7 +61,7 @@ func (repo *PostgresUserRepository) CreateUser(user models.User) error {
 func (repo *PostgresUserRepository) RemoveUser(user models.User) error {
 	query := `DELETE FROM users WHERE email = $1`
 
-	stmt, err := repo.db.Prepare(query)
+	stmt, err := repo.Db.Prepare(query)
 
 	if err != nil {
 		return err
@@ -76,7 +80,7 @@ func (repo *PostgresUserRepository) GetAll() ([]models.User, error) {
 	var users = []models.User{}
 	query := `SELECT * FROM users`
 
-	rows, err := repo.db.Queryx(query)
+	rows, err := repo.Db.Queryx(query)
 
 	if err != nil {
 		return []models.User{}, errors.New("Cannot proceed get all users")
