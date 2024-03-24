@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"bet-manager/auth"
 	"bet-manager/models"
-	"bet-manager/repository"
+	"bet-manager/services"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -17,17 +16,18 @@ type ApiHandlers interface {
 }
 
 type apiHandlers struct {
-	Repository repository.IUserRepository
+	Service services.UserService
 }
 
-func NewApiHandlersRepository(repo repository.IUserRepository) ApiHandlers {
+func NewApiHandlersRepository(service services.UserService) ApiHandlers {
 	return &apiHandlers{
-		Repository: repo,
+		Service: service,
 	}
 }
 
 func (api *apiHandlers) Login(context *gin.Context) {
-	var user models.User
+	api.Re
+	/*var user models.User
 
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
@@ -48,7 +48,7 @@ func (api *apiHandlers) Login(context *gin.Context) {
 	}
 	//context.Request.Header.Set("token", token)
 	context.Header("Authorization", token)
-	context.JSON(http.StatusOK, dbUser)
+	context.JSON(http.StatusOK, dbUser)*/
 }
 
 func (api *apiHandlers) Register(context *gin.Context) {
