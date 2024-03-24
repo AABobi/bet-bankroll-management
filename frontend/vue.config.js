@@ -10,5 +10,13 @@ module.exports = {
         changeOrigin: true
       }
     }
+  },
+  css: {
+    loaderOptions: {
+      sass: {
+        additionalData: 
+        '@import "@/core/css/global.scss";'
+      }
+    }
   }
 }

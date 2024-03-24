@@ -1,32 +1,51 @@
 import axios from "axios";
 import { defineStore } from "pinia";
+import { ref } from "vue";
+import { login, register, test1 } from "./actions";
 //import { ref } from "vue";
 //import { useRouter } from "vue-router";
 
 export const useAuthenticationStore = defineStore("authentication", () => {
-  const login = async (): Promise<boolean> => {
-    //const token = localStorage.getItem("token");
-    //console.log(userData);
-    const response = await axios.post("http://backend-go2-service:80/login", {
-      email: "test3",
-      login: "test3",
-      password: "test3",
-    });
-    /*.then((res) => {
-        console.log(res.data.token);
-      })
-      .catch((err) => {
-        console.log(err.response);
-      });*/
+  /* const login = async (email: string, password: string) => {
+    console.log("DUPA - login");
 
-    console.log(response.data.token);
+    const response = await axios.post("http://localhost:8080/login", {
+      email: email,
+      password: password,
+    });
+
     if (response.data.token != undefined) {
+      localStorage.setItem("token", response.data.token);
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   };
+
+  const register = async (
+    email: string,
+    password: string
+  ): Promise<boolean> => {
+    const resposne = await axios.post("http://localhost:8080/signup", {
+      email: email,
+      login: email,
+      password: password,
+    });
+
+    // eslint-disable-next-line
+    if (resposne.data.message === "User created") {
+      return true;
+    }
+    return false;
+  };
+
+  const test1 = () => {
+    console.log("ASDJHASJKFGBASLFGBASBGJASBGBASBJGAS");
+  };*/
+
   return {
     login,
+    register,
+    test1,
   };
 });

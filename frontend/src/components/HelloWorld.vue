@@ -1,7 +1,8 @@
 <template>
-<div>{{ test }}</div>
+  <button data-test="data-test" @click="testFun">TEST</button>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
-const test = ref("test")
+const testFun = () => {
+  console.log("TESTTEST");
+};
 </script>
