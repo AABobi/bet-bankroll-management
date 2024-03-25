@@ -1,156 +1,120 @@
 package services
 
 import (
+	"bet-manager/auth"
 	"bet-manager/models"
 	"bet-manager/repository"
-	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
 type UserService interface {
-	Login(context *gin.Context) (uint, []byte)
-	Register(context *gin.Context) (uint, []byte)
-	RemoveUser(context *gin.Context) (uint, []byte)
-	GetAllUsers(context *gin.Context) (uint, []byte)
+	Login(context *gin.Context) (int, *models.User, *gin.H, *string)
+	Register(context *gin.Context) (int, gin.H)
+	RemoveUser(context *gin.Context) (int, gin.H)
+	GetAllUsers(context *gin.Context) (int, *[]models.User, *gin.H)
 }
 
 type userService struct {
 	Repository repository.IUserRepository
 }
 
-type serviceMessage struct {
-	message string
-}
-
 func NewUserService(repo repository.IUserRepository) UserService {
 	return &userService{repo}
 }
 
-func (api *userService) Login(context *gin.Context) (uint, []byte) {
+func (api *userService) Login(ctx *gin.Context) (int, *models.User, *gin.H, *string) {
 	var user models.User
-
-	err := context.ShouldBindJSON(&user)
-
+	fmt.Println("1")
+	err := ctx.ShouldBindJSON(&user)
+	fmt.Println("11")
 	if err != nil {
-		messageString := `{"message": "Could not parse request data"}`
-		return marshalAndStatusHandler(messageString, http.StatusBadRequest)
+		fmt.Println("2")
+		ginMessage := gin.H{"message": "Could not parse request data"}
+		return http.StatusBadRequest, nil, &ginMessage, nil
 	}
 
+	fmt.Println("22")
 	dbUser, err := api.Repository.GetUser(user.Email)
-
+	fmt.Println("222")
 	if err != nil {
-		messageString := `{"message": "Could not get user"}`
-		return marshalAndStatusHandler(messageString, http.StatusBadRequest)
+		fmt.Println("3")
+		ginMessage := gin.H{"message": "Could not find user"}
+		return http.StatusBadRequest, nil, &ginMessage, nil
 	}
 
-	dbUserByte, err := json.Marshal(&dbUser)
-
-	return marshalAndStatusHandler(dbUserByte, http.StatusBadRequest)
-
-	/*	token, err := auth.GenerateToken(user.Email, dbUser.UserId)
-
-		if err != nil {
-			messageString := `{"Problem with generate token"}`
-			a, err := json.Marshal(messageString)
-
-			if err != nil {
-				log.Panicln("Cannot marshal message")
-			}
-			return 401, a
-		}
-
-		return 200,*/
-	//context.Request.Header.Set("token", token)
-	//context.Header("Authorization", token)
-	//context.JSON(http.StatusOK, dbUser)
+	fmt.Println("4")
+	token, _ := auth.GenerateToken(dbUser.Email, dbUser.UserId)
+	return http.StatusOK, &dbUser, nil, &token
 }
 
-func (api *userService) Register(context *gin.Context) (uint, []byte) {
+func (api *userService) Register(context *gin.Context) (int, gin.H) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
+	fmt.Println("user")
+	fmt.Println(user)
+	fmt.Println("0")
 	if err != nil {
-
-		//context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Could not parse data"})
-		message := `{"message": "Could not parse data"}`
-		return marshalAndStatusHandler(message, http.StatusBadRequest)
+		fmt.Println("1")
+		ginMessage := gin.H{"message": "Could not parse data"}
+		return http.StatusBadRequest, ginMessage
 	}
+	fmt.Println("11")
 	existUser, err := api.Repository.GetUser(user.Email)
-
+	fmt.Println("111")
 	if existUser.Email == user.Email && err == nil {
-		//context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Cannot create user because user with that email exists"})
-		message := `{"message": "Cannot create user because user with that email exists"}`
-		return marshalAndStatusHandler(message, http.StatusBadRequest)
+		fmt.Println("2")
+		ginMessage := gin.H{"message": "Cannot create user because user with that email exists"}
+		return http.StatusBadRequest, ginMessage
 	} else {
+		fmt.Println("3")
 		err = api.Repository.CreateUser(user)
 		if err != nil {
-			//context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Cannot create user"})
-			message := `{"message": "Cannot create user"}`
-			return marshalAndStatusHandler(message, http.StatusBadRequest)
+			fmt.Println("4")
+			ginMessage := gin.H{"message": "Cannot create user"}
+			return http.StatusBadRequest, ginMessage
 		}
-
-		//context.JSON(http.StatusCreated, gin.H{"message": "User created"})
-		message := `{"message": "User created"}`
-		return marshalAndStatusHandler(message, http.StatusCreated)
+		fmt.Println("5")
+		ginMessage := gin.H{"message": "User created"}
+		return http.StatusCreated, ginMessage
 	}
 }
 
-func (api *userService) RemoveUser(context *gin.Context) (uint, []byte) {
+func (api *userService) RemoveUser(context *gin.Context) (int, gin.H) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 	if err != nil {
-		//context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Could parse data"})
-		message := `{"message": "Could parse data"}`
-		return marshalAndStatusHandler(message, http.StatusBadRequest)
+		ginMessage := gin.H{"message": "Could parse data"}
+		return http.StatusBadRequest, ginMessage
 	}
 	existUser, err := api.Repository.GetUser(user.Email)
 	if err != nil {
-		//context.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Cannot remove user because it doesn't exist"})
-		message := `{"message": "Cannot remove user because it doesn't exist"}`
-		return marshalAndStatusHandler(message, http.StatusBadRequest)
+		ginMessage := gin.H{"message": "Cannot remove user because it doesn't exist"}
+		return http.StatusBadRequest, ginMessage
 	}
 	if existUser.Email == user.Email {
 		err = api.Repository.RemoveUser(user)
 		if err != nil {
-			//context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("%v", err)})
-			message := fmt.Sprintf(`{"message": "%v"}`, err)
-			return marshalAndStatusHandler(message, http.StatusBadRequest)
+			ginMessage := gin.H{"message": fmt.Sprintf("%v", err)}
+			return http.StatusBadRequest, ginMessage
 		}
-		message := `{"message": "User removed"}`
-		return marshalAndStatusHandler(message, http.StatusOK)
-		//context.JSON(http.StatusOK, gin.H{"message": "User removed"})
+		ginMessage := gin.H{"message": "User removed"}
+		return http.StatusOK, ginMessage
 	}
-	message := `{"message": "Could parse data"}`
-	return marshalAndStatusHandler(message, http.StatusBadRequest)
+	ginMessage := gin.H{"message": "Could parse data"}
+	return http.StatusBadRequest, ginMessage
 }
 
-func (api *userService) GetAllUsers(context *gin.Context) (uint, []byte) {
+func (api *userService) GetAllUsers(context *gin.Context) (int, *[]models.User, *gin.H) {
 	var users []models.User
 	users, err := api.Repository.GetAll()
+	fmt.Println("gellALl")
+	fmt.Println(users)
 	if err != nil {
-		//context.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Cannot get users"})
-		message := `{"message": "Cannot get users"}`
-		return marshalAndStatusHandler(message, http.StatusBadRequest)
+		ginMessage := gin.H{"message": "Cannot get users"}
+		return http.StatusBadRequest, nil, &ginMessage
 	}
-	//message := `{"message": "Cannot get users"}`
-	return marshalAndStatusHandler(users, http.StatusOK)
-	//context.JSON(http.StatusOK, users)
-}
-
-func marshalAndStatusHandler(message any, status uint) (uint, []byte) {
-	messageByte, err := json.Marshal(message)
-	if err != nil {
-		errorMessage := `{"message": "Could not marshal message"}`
-		log.Println("Could not marshal message")
-		errorMessageByte, err := json.Marshal(errorMessage)
-
-		if err != nil {
-			log.Panicln("Could not marshal message")
-		}
-
-		return 500, errorMessageByte
-	}
-	return status, messageByte
+	fmt.Println("ALE GIT?")
+	return http.StatusOK, &users, nil
 }

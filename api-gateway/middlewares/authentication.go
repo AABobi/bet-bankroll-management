@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"bet-manager/auth"
-	"context"
 	"github.com/gin-gonic/gin"
 	"strings"
 )
@@ -26,9 +25,6 @@ func Authentication(ginCtx *gin.Context) {
 		return
 	}
 
-	//ginCtx.Set("userId", userId)
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, "myKey", userId)
-
+	ginCtx.Set("userId", userId)
 	ginCtx.Next()
 }

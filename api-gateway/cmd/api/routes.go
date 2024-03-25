@@ -9,8 +9,8 @@ func RegisterRoutes(server *gin.Engine) {
 	authenticated := server.Group("/")
 
 	authenticated.Use(middlewares.Authentication)
-	server.POST("/login", api.Login)
-	server.POST("/register", api.Register)
-	authenticated.DELETE("/remove-user", api.RemoveUser)
-	authenticated.GET("/get-all-users", api.GetAllUsers)
+	server.POST("/login", handlers.Login)
+	server.POST("/register", handlers.Register)
+	authenticated.DELETE("/remove-user", handlers.RemoveUser)
+	authenticated.GET("/get-all-users", handlers.GetAllUsers)
 }
